@@ -56,7 +56,7 @@ function startQ() {
           lowInventory();
           break;
         case 'Add to inventory':
-          console.log('Add more');
+          stockUp();
           break;
         case 'Add new product':
           console.log('add new');
@@ -96,7 +96,53 @@ function lowInventory() {
 }
 
 // Add more to an item's stock, UPDATE
-function stockUp() {}
+function stockUp() {
+  updateVars();
+  inquire
+    .prompt([
+      {
+        name: 'itemName',
+        type: 'list',
+        message: 'Which item would you like to add more of?',
+        choices: itemList
+      }
+    ])
+    .then(function(response) {
+      inquire
+        .prompt([
+          {
+            name: 'amount',
+            type: 'input',
+            message:
+              'How much more ' + response.itemName + ' would you like to add?'
+          }
+        ])
+        .then(function(quantity) {
+          for (y in items) {
+            if (items[y].product_name == response.itemName) {
+              connection.query(
+                'UPDATE products SET stock_quantity=' +
+                  (parseInt(quantity.amount) +
+                    parseInt(items[y].stock_quantity)) +
+                  ' WHERE product_name=?',
+                [response.itemName],
+                function(err) {
+                  if (err) throw err;
+                }
+              );
+              console.log(
+                response.itemName +
+                  ' now has ' +
+                  (parseInt(quantity.amount) +
+                    parseInt(items[y].stock_quantity)) +
+                  ' in stock.'
+              );
+              startQ();
+            }
+          }
+        });
+    });
+}
 
 // Use inquirer to INSERT a new product
 function newProduct() {}
