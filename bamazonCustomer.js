@@ -58,9 +58,24 @@ connection.connect(function(err) {
                     'UPDATE products SET stock_quantity=' +
                       (parseInt(items[y].stock_quantity) -
                         parseInt(amount.quantity)) +
-                      " WHERE product_name='" +
-                      answer.theChoice +
-                      "'",
+                      ' WHERE product_name=?',
+                    [answer.theChoice],
+                    function(err) {
+                      if (err) throw err;
+                    }
+                  );
+                  connection.query(
+                    'UPDATE products SET product_sales=? WHERE product_name=?',
+                    [
+                      parseFloat(
+                        items[y].product_sales +
+                          parseFloat(
+                            parseFloat(items[y].price) *
+                              parseInt(amount.quantity)
+                          )
+                      ),
+                      answer.theChoice
+                    ],
                     function(err) {
                       if (err) throw err;
                     }

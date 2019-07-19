@@ -2,15 +2,23 @@ CREATE DATABASE IF NOT EXISTS bamazon;
 
 USE bamazon;
 
+DROP TABLE products;
+
 CREATE TABLE IF NOT EXISTS products (
 	item_id INTEGER(10) AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(70) NOT NULL,
     department_name VARCHAR(70) NOT NULL,
-    price FLOAT(7) NOT NULL,
-    stock_quantity INTEGER(10) NOT NULL
+    price FLOAT(14,2) NOT NULL,
+    stock_quantity INTEGER(10) NOT NULL,
+    product_sales FLOAT(14,2) DEFAULT 0
 );
 
--- Modify the products table so that there's a product_sales column, and modify your bamazonCustomer.js app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
+
+CREATE TABLE IF NOT EXISTS departments (
+    department_id INTEGER(10) AUTO_INCREMENT PRIMARY KEY,
+    department_name VARCHAR(70) NOT NULL,
+    overhead_costs FLOAT(14,2)
+);
 
 
 
@@ -28,3 +36,4 @@ INSERT INTO products (product_name, department_name, price, stock_quantity) VALU
 ("Lucha Bros T-shirt", "Apparel", 19.99, 30);
 
 SELECT * FROM products;
+SELECT * FROM departments;
