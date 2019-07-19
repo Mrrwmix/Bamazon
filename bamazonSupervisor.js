@@ -10,29 +10,10 @@ var connection = mysql.createConnection({
   database: 'bamazon'
 });
 
-var productList = [];
-var products;
-var departments;
-
 connection.connect(function(err) {
   if (err) throw err;
-  updateVars();
   startQ();
 });
-
-function updateVars() {
-  connection.query('SELECT * FROM products', function(err, res) {
-    if (err) throw err;
-    for (x in res) {
-      productList.push(res[x].product_name);
-    }
-    products = res;
-  });
-  connection.query('SELECT * FROM departments', function(err, r) {
-    if (err) throw err;
-    departments = r;
-  });
-}
 
 function startQ() {
   inquire
@@ -67,25 +48,42 @@ function startQ() {
 }
 
 function viewDepartmentSales() {
-  console.log('View department sales');
-  startQ();
+  connection.query(
+    'SELECT d.department_id, d.department_name, d.overhead_costs, products.product_sales, (products.product_sales-d.overhead_costs) AS total_profit FROM departments d INNER JOIN products ON d.department_name=products.department_name GROUP BY department_name',
+    function(err, res) {
+      if (err) throw err;
+      console.log(Table.print(res));
+      startQ();
+    }
+  );
 }
 
 function newDepartment() {
-  console.log('Create a new department here!');
-  startQ();
+  inquire
+    .prompt([
+      {
+        name: 'depo',
+        type: 'input',
+        message: "What's the name of the new department?"
+      },
+      {
+        name: 'costs',
+        type: 'input',
+        message: "Specify the new department's overhead costs."
+      }
+    ])
+    .then(function(answers) {
+      connection.query(
+        'INSERT INTO departments (department_name, overhead_costs) VALUES (?,?)',
+        [answers.depo, parseFloat(answers.costs)],
+        function(err) {
+          if (err) throw err;
+          connection.query('SELECT * FROM departments', function(err, r) {
+            if (err) throw err;
+            console.log(Table.print(r));
+          });
+          setTimeout(startQ, 300);
+        }
+      );
+    });
 }
-/*
-Modify mySQL and bamazonCustomer first.
-
-Add a new table with department_id, department_name, and overhead_costs columns
-
-2 options
-
-1. View product sales by department 
--- display department table + add a total profit column (product sales - overhead cost)
-
-2. Create new department
--- inquire to fill in fields
-
-*/
