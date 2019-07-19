@@ -19,7 +19,6 @@ connection.connect(function(err) {
   startQ();
 });
 
-// Update itemList array and items variable after any SQL transaction
 function updateVars() {
   connection.query('SELECT * FROM products', function(err, res) {
     if (err) throw err;
@@ -30,7 +29,6 @@ function updateVars() {
   });
 }
 
-// Starting questions to cycle back to upon completing an SQL transaction
 function startQ() {
   inquire
     .prompt([
@@ -59,7 +57,7 @@ function startQ() {
           stockUp();
           break;
         case 'Add new product':
-          console.log('add new');
+          newProduct();
           break;
         case 'Quit':
           console.log('Bye bye!');
@@ -71,7 +69,6 @@ function startQ() {
     });
 }
 
-// View products for sale (stock > 0)
 function viewProducts() {
   connection.query(
     'SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
@@ -83,7 +80,6 @@ function viewProducts() {
   );
 }
 
-// View low inventory (stock < 5)
 function lowInventory() {
   connection.query(
     'SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity <= 4 ORDER BY stock_quantity',
@@ -95,7 +91,6 @@ function lowInventory() {
   );
 }
 
-// Add more to an item's stock, UPDATE
 function stockUp() {
   updateVars();
   inquire
@@ -137,6 +132,7 @@ function stockUp() {
                     parseInt(items[y].stock_quantity)) +
                   ' in stock.'
               );
+              updateVars();
               startQ();
             }
           }
@@ -144,5 +140,55 @@ function stockUp() {
     });
 }
 
-// Use inquirer to INSERT a new product
-function newProduct() {}
+function newProduct() {
+  inquire
+    .prompt([
+      {
+        name: 'product',
+        type: 'input',
+        message: "What's the name of the new product?"
+      },
+      {
+        name: 'category',
+        type: 'input',
+        message: "Specify the new product's category."
+      },
+      {
+        name: 'price',
+        type: 'input',
+        message: 'Name your price.'
+      },
+      {
+        name: 'stock',
+        type: 'input',
+        message: 'How much inventory?'
+      }
+    ])
+    .then(function(answers) {
+      connection.query(
+        'INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?,?,?,?)',
+        [
+          answers.product,
+          answers.category,
+          parseFloat(answers.price),
+          parseInt(answers.stock)
+        ],
+        function(err) {
+          if (err) throw err;
+          console.log(
+            'Successfully added ' +
+              answers.product +
+              ' (' +
+              answers.stock +
+              ' in stock) for $' +
+              answers.price +
+              ' in the ' +
+              answers.category +
+              ' category.'
+          );
+        }
+      );
+      updateVars();
+      setTimeout(startQ, 300);
+    });
+}
