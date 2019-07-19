@@ -50,10 +50,10 @@ function startQ() {
     .then(function(answer) {
       switch (answer.choice) {
         case 'View products for sale':
-          console.log('See some products');
+          viewProducts();
           break;
         case 'View low inventory':
-          console.log('view low');
+          lowInventory();
           break;
         case 'Add to inventory':
           console.log('Add more');
@@ -72,10 +72,28 @@ function startQ() {
 }
 
 // View products for sale (stock > 0)
-function viewProducts() {}
+function viewProducts() {
+  connection.query(
+    'SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
+    function(err, res) {
+      if (err) throw err;
+      console.log(Table.print(res));
+      startQ();
+    }
+  );
+}
 
-// View low inventory (stock <= 5)
-function lowInventory() {}
+// View low inventory (stock < 5)
+function lowInventory() {
+  connection.query(
+    'SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity <= 4 ORDER BY stock_quantity',
+    function(err, res) {
+      if (err) throw err;
+      console.log(Table.print(res));
+      startQ();
+    }
+  );
+}
 
 // Add more to an item's stock, UPDATE
 function stockUp() {}
