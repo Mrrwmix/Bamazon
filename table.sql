@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS bamazon;
 
 USE bamazon;
 
-DROP TABLE products;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS departments;
 
 CREATE TABLE IF NOT EXISTS products (
 	item_id INTEGER(10) AUTO_INCREMENT PRIMARY KEY,
@@ -34,6 +35,12 @@ INSERT INTO products (product_name, department_name, price, stock_quantity) VALU
 ("Oscar's Trash Can", "Toys", 49.99, 1),
 ("Ernie's Rubber Duckie", "Toys", 39.99, 1),
 ("Lucha Bros T-shirt", "Apparel", 19.99, 30);
+
+INSERT INTO departments (department_name, overhead_costs) VALUES 
+("Gaming", 5000),
+("Condiments", 2000),
+("Apparel", 1000),
+("Toys", 2000);
 
 SELECT * FROM products;
 SELECT * FROM departments;
