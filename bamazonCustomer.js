@@ -88,7 +88,7 @@ connection.connect(function(err) {
                       ') for ' +
                       parseFloat(
                         parseFloat(items[y].price) * parseInt(amount.quantity)
-                      ) +
+                      ).toFixed(2) +
                       '!\nThanks for shopping on Bamazon.'
                   );
                 }

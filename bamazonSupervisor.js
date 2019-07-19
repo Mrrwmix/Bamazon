@@ -49,7 +49,7 @@ function startQ() {
 
 function viewDepartmentSales() {
   connection.query(
-    'SELECT d.department_id, d.department_name, d.overhead_costs, products.product_sales, (products.product_sales-d.overhead_costs) AS total_profit FROM departments d INNER JOIN products ON d.department_name=products.department_name GROUP BY department_name',
+    'SELECT d.department_id, d.department_name, d.overhead_costs, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales)-d.overhead_costs) AS total_profit FROM departments d INNER JOIN products ON d.department_name=products.department_name GROUP BY department_name',
     function(err, res) {
       if (err) throw err;
       console.log(Table.print(res));

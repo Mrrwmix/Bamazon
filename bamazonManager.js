@@ -108,8 +108,7 @@ function stockUp() {
           {
             name: 'amount',
             type: 'input',
-            message:
-              'How much more ' + response.itemName + ' would you like to add?'
+            message: 'Selected ' + response.itemName + '. Quantity to add: '
           }
         ])
         .then(function(quantity) {
